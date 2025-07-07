@@ -1,4 +1,4 @@
-import { allPokemonQuery, pokemonQuery, type Pokemon } from "@/pokemon";
+import { getAllPokemonQuery, getPaginatedPokemon, getPokemonQuery, type Pokemon } from "@/pokemon";
 import { useForm } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -7,7 +7,7 @@ import { useState } from "react";
 export const Route = createFileRoute("/pokemon-dashboard")({
 	component: PokemonDashboard,
 	loader: async ({ context }) =>
-		context.queryClient.ensureQueryData(allPokemonQuery()),
+		context.queryClient.ensureQueryData(getAllPokemonQuery(20, 0)),
 	errorComponent: ({ error }) => (
 		<div className="flex items-center justify-center min-h-screen bg-red-100">
 			Error! {error.message}
@@ -16,8 +16,17 @@ export const Route = createFileRoute("/pokemon-dashboard")({
 });
 
 function PokemonDashboard() {
-	const { data } = useSuspenseQuery(allPokemonQuery());
 	const [searchTerm, setSearchTerm] = useState("");
+	const [currentPage, setCurrentPage] = useState(1);
+	const [pageSize, setPageSize] = useState(20);
+	const offset = (currentPage - 1) * pageSize;
+
+	const paginationHook = getPaginatedPokemon(pageSize, offset);
+	const { data, isLoading, error } = useSuspenseQuery(paginationHook);
+
+	const totalPages = data ? paginationHook.getTotalPages(data) : 0;
+	const hasNext = data ? paginationHook.hasNextPage(data) : false;
+	const hasPrevious = data ? paginationHook.hasPreviousPage(data) : false;
 	const { queryClient } = Route.useRouteContext();
 
 	const form = useForm({
@@ -39,7 +48,7 @@ function PokemonDashboard() {
 
 			if (!matchesExisting) {
 				try {
-					await queryClient.fetchQuery(pokemonQuery(searchValue));
+					await queryClient.fetchQuery(getPokemonQuery(searchValue));
 				} catch (error) {
 					console.error("Failed to fetch Pokemon:", error);
 				}
@@ -48,7 +57,7 @@ function PokemonDashboard() {
 	});
 
 	const pokemonDetailsQuery = useSuspenseQuery<Pokemon, Error>(
-		pokemonQuery(searchTerm),
+		getPokemonQuery(searchTerm),
 	);
 
 	const filtered =
@@ -60,10 +69,6 @@ function PokemonDashboard() {
 		searchTerm && filtered.length === 0 && pokemonDetailsQuery.data
 			? [pokemonDetailsQuery.data]
 			: filtered;
-
-	const remainingCount = data.count - filtered.length;
-	const remainingCountText =
-		remainingCount > 0 ? `Plus ${remainingCount} more...` : "";
 
 	return (
 		<div className="flex flex-col items-center">
@@ -127,7 +132,15 @@ function PokemonDashboard() {
 
 					<div className="p-4 mb-6 rounded-lg shadow-sm">
 						<ul className="grid grid-cols-2 gap-3 p-2 overflow-y-auto sm:grid-cols-3 max-h-96">
-							{filteredPokemon.length > 0 ? (
+							{isLoading ? (
+								<li className="text-center text-gray-500 col-span-full">
+									Loading Pokémon...
+								</li>
+							) : error ? (
+								<li className="text-center text-red-500 col-span-full">
+									Error: {error.message}
+								</li>
+							) : filteredPokemon.length > 0 ? (
 								filteredPokemon.map((pokemon: { name: string; url?: string }) => {
 									if (!pokemon.name) return null;
 									return (
@@ -148,13 +161,91 @@ function PokemonDashboard() {
 									{pokemonDetailsQuery.error.message}
 								</li>
 							)}
-
-							{remainingCountText && (
-								<li className="mt-2 ml-2 text-gray-500 ">
-									{remainingCountText}
-								</li>
-							)}
 						</ul>
+					</div>
+
+					<div className="p-4 mb-6 rounded-lg shadow-sm">
+						<div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+							<div className="flex items-center space-x-4">
+								<span className="text-sm text-gray-600">
+									Page {currentPage} of {totalPages}
+								</span>
+								<div className="flex items-center space-x-2">
+									<label htmlFor="pageSize" className="text-sm text-gray-600">
+										Show:
+									</label>
+									<select
+										id="pageSize"
+										value={pageSize}
+										onChange={(e) => {
+											setPageSize(Number(e.target.value));
+											setCurrentPage(1); // Reset to first page when changing page size
+										}}
+										className="px-3 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+									>
+										<option value={10}>10 per page</option>
+										<option value={20}>20 per page</option>
+										<option value={50}>50 per page</option>
+										<option value={100}>100 per page</option>
+									</select>
+								</div>
+							</div>
+
+							<div className="flex items-center space-x-2">
+								<button
+									onClick={() => setCurrentPage(1)}
+									disabled={!hasPrevious}
+									className="px-3 py-1 text-sm text-white transition-colors bg-blue-500 rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+								>
+									First
+								</button>
+								<button
+									onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+									disabled={!hasPrevious}
+									className="px-3 py-1 text-sm text-white transition-colors bg-blue-500 rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+								>
+									Previous
+								</button>
+
+								<div className="flex items-center space-x-1">
+									<span className="text-sm text-gray-600">Go to:</span>
+									<input
+										type="number"
+										min="1"
+										max={totalPages}
+										value={currentPage}
+										onChange={(e) => {
+											const page = Number(e.target.value);
+											if (page >= 1 && page <= totalPages) {
+												setCurrentPage(page);
+											}
+										}}
+										className="w-16 px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+									/>
+								</div>
+
+								<button
+									onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+									disabled={!hasNext}
+									className="px-3 py-1 text-sm text-white transition-colors bg-blue-500 rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+								>
+									Next
+								</button>
+								<button
+									onClick={() => setCurrentPage(totalPages)}
+									disabled={!hasNext}
+									className="px-3 py-1 text-sm text-white transition-colors bg-blue-500 rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
+								>
+									Last
+								</button>
+							</div>
+						</div>
+
+						{data && (
+							<div className="mt-2 text-xs text-center text-gray-500">
+								Showing {offset + 1} to {Math.min(offset + pageSize, data.count)} of {data.count} Pokémon
+							</div>
+						)}
 					</div>
 				</div>
 			</div>

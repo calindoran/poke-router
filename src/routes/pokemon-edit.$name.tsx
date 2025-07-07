@@ -1,4 +1,4 @@
-import { pokemonQuery, type Pokemon } from '@/pokemon';
+import { getPokemonQuery, type Pokemon } from '@/pokemon';
 import { useForm } from '@tanstack/react-form';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
@@ -7,7 +7,7 @@ import { z } from 'zod';
 export const Route = createFileRoute('/pokemon-edit/$name')({
     component: PokemonEdit,
     loader: async ({ params, context }) =>
-        context.queryClient.ensureQueryData(pokemonQuery(params.name)),
+        context.queryClient.ensureQueryData(getPokemonQuery(params.name)),
     errorComponent: ({ error }) => (
         <div className="flex items-center justify-center min-h-screen bg-red-100">
             Error! {error.message}
@@ -25,7 +25,7 @@ const pokemonSchema = z.object({
 
 function PokemonEdit() {
     const { name } = Route.useParams();
-    const { data } = useSuspenseQuery<Pokemon, Error>(pokemonQuery(name));
+    const { data } = useSuspenseQuery<Pokemon, Error>(getPokemonQuery(name));
     const { auth } = Route.useRouteContext();
     const navigate = Route.useNavigate();
 

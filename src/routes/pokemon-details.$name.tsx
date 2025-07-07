@@ -1,11 +1,11 @@
-import { pokemonQuery, type Pokemon } from "@/pokemon";
+import { getPokemonQuery, type Pokemon } from "@/pokemon";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/pokemon-details/$name")({
 	component: PokemonDetails,
 	loader: async ({ params, context }) =>
-		context.queryClient.ensureQueryData(pokemonQuery(params.name)),
+		context.queryClient.ensureQueryData(getPokemonQuery(params.name)),
 	errorComponent: ({ error }) => (
 		<div className="flex items-center justify-center min-h-screen bg-red-100">
 			Error! {error.message}
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/pokemon-details/$name")({
 
 function PokemonDetails() {
 	const { name } = Route.useParams();
-	const { data } = useSuspenseQuery<Pokemon, Error>(pokemonQuery(name));
+	const { data } = useSuspenseQuery<Pokemon, Error>(getPokemonQuery(name));
 	const { auth } = Route.useRouteContext();
 	const navigate = Route.useNavigate();
 
