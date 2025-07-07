@@ -17,6 +17,7 @@ function PokemonDetails() {
 	const { name } = Route.useParams();
 	const { data } = useSuspenseQuery<Pokemon, Error>(pokemonQuery(name));
 	const { auth } = Route.useRouteContext();
+	const navigate = Route.useNavigate();
 
 	if (!data) {
 		return (
@@ -38,8 +39,12 @@ function PokemonDetails() {
 							if (window.confirm(
 								`Are you sure you want to edit this Pokémon? ${data.name} (ID: ${data.id}?)`
 							)) {
-								return;
+								navigate({
+									to: "/pokemon-edit/$name",
+									params: { name: data.name },
+								});
 							}
+
 						}}
 					>
 						Edit Pokémon

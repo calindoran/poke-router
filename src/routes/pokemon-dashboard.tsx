@@ -66,13 +66,13 @@ function PokemonDashboard() {
 		remainingCount > 0 ? `Plus ${remainingCount} more...` : "";
 
 	return (
-		<div className="flex flex-col items-center px-4 py-12 bg-gradient-to-b sm:px-6 lg:px-8">
-			<div className="w-full max-w-3xl overflow-hidden bg-white shadow-xl rounded-xl">
-				<div className="flex items-center justify-center px-6 py-4">
+		<div className="flex flex-col items-center">
+			<div className="w-full max-w-3xl overflow-hidden shadow-xl rounded-xl">
+				<div className="flex items-center justify-center px-6 py-4 mt-6">
 					<h1 className="text-3xl font-extrabold">Pokédex</h1>
 				</div>
 
-				<div className="p-6 bg-white">
+				<div className="p-6 ">
 					<div className="p-4 mb-6 rounded-lg shadow-sm">
 						<div className="relative">
 							<form
@@ -125,16 +125,15 @@ function PokemonDashboard() {
 						</div>
 					</div>
 
-					<div className="p-4 border-2 border-blue-200 rounded-lg">
-						<h2 className="mb-4 text-xl font-bold text-center text-blue-700">
-							{searchTerm ? "Search Results" : "Available Pokémon"}
-						</h2>
+					<div className="p-4 mb-6 rounded-lg shadow-sm">
 						<ul className="grid grid-cols-2 gap-3 p-2 overflow-y-auto sm:grid-cols-3 max-h-96">
 							{filteredPokemon.length > 0 ? (
-								filteredPokemon.map(
-									(pokemon: { name: string; url?: string }) => (
+								filteredPokemon.map((pokemon: { name: string; url?: string }) => {
+									if (!pokemon.name) return null;
+									return (
 										<PokemonListItem key={pokemon.name} name={pokemon.name} />
-									),
+									);
+								},
 								)
 							) : (
 								<li className="text-center text-gray-500 col-span-full">

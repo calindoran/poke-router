@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PokemonDashboardRouteImport } from './routes/pokemon-dashboard'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PokemonEditNameRouteImport } from './routes/pokemon-edit.$name'
 import { Route as PokemonDetailsNameRouteImport } from './routes/pokemon-details.$name'
 
 const PokemonDashboardRoute = PokemonDashboardRouteImport.update({
@@ -29,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PokemonEditNameRoute = PokemonEditNameRouteImport.update({
+  id: '/pokemon-edit/$name',
+  path: '/pokemon-edit/$name',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PokemonDetailsNameRoute = PokemonDetailsNameRouteImport.update({
   id: '/pokemon-details/$name',
   path: '/pokemon-details/$name',
@@ -40,12 +46,14 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/pokemon-dashboard': typeof PokemonDashboardRoute
   '/pokemon-details/$name': typeof PokemonDetailsNameRoute
+  '/pokemon-edit/$name': typeof PokemonEditNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/pokemon-dashboard': typeof PokemonDashboardRoute
   '/pokemon-details/$name': typeof PokemonDetailsNameRoute
+  '/pokemon-edit/$name': typeof PokemonEditNameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,18 +61,30 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/pokemon-dashboard': typeof PokemonDashboardRoute
   '/pokemon-details/$name': typeof PokemonDetailsNameRoute
+  '/pokemon-edit/$name': typeof PokemonEditNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/pokemon-dashboard' | '/pokemon-details/$name'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/pokemon-dashboard'
+    | '/pokemon-details/$name'
+    | '/pokemon-edit/$name'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/pokemon-dashboard' | '/pokemon-details/$name'
+  to:
+    | '/'
+    | '/login'
+    | '/pokemon-dashboard'
+    | '/pokemon-details/$name'
+    | '/pokemon-edit/$name'
   id:
     | '__root__'
     | '/'
     | '/login'
     | '/pokemon-dashboard'
     | '/pokemon-details/$name'
+    | '/pokemon-edit/$name'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -72,6 +92,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PokemonDashboardRoute: typeof PokemonDashboardRoute
   PokemonDetailsNameRoute: typeof PokemonDetailsNameRoute
+  PokemonEditNameRoute: typeof PokemonEditNameRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -97,6 +118,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pokemon-edit/$name': {
+      id: '/pokemon-edit/$name'
+      path: '/pokemon-edit/$name'
+      fullPath: '/pokemon-edit/$name'
+      preLoaderRoute: typeof PokemonEditNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pokemon-details/$name': {
       id: '/pokemon-details/$name'
       path: '/pokemon-details/$name'
@@ -112,6 +140,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PokemonDashboardRoute: PokemonDashboardRoute,
   PokemonDetailsNameRoute: PokemonDetailsNameRoute,
+  PokemonEditNameRoute: PokemonEditNameRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -35,9 +35,9 @@ export const Route = createRootRouteWithContext<{
 		};
 
 		return (
-			<>
+			<div className="flex flex-col min-h-screen">
 				{auth.isAuthenticated && (
-					<div className="flex justify-between gap-2 p-4">
+					<div className="sticky top-0 flex justify-between p-2 px-4 mb-4 shadow-md">
 						<Link to="/pokemon-dashboard" className="[&.active]:font-bold">
 							Home
 						</Link>
@@ -52,7 +52,7 @@ export const Route = createRootRouteWithContext<{
 				)}
 				<Outlet />
 				<TanStackRouterDevtools />
-			</>
+			</div>
 		);
 	},
 });

@@ -17,17 +17,48 @@ export interface Pokemon {
 	base_experience: number;
 	height: number;
 	weight: number;
+	is_default: boolean;
+	location_area_encounters: string;
 	species: {
 		name: string;
 		url: string;
 	};
 	sprites: {
-		front_default: string;
+		front_default?: string;
+		front_female?: string;
+		front_shiny?: string;
+		front_shiny_female?: string;
+		back_default?: string;
+		back_female?: string;
+		back_shiny?: string;
+		back_shiny_female?: string;
 		other: {
 			"official-artwork": {
 				front_default: string;
+				front_shiny?: string;
+			};
+			dream_world?: {
+				front_default?: string;
+				front_female?: string;
+			};
+			home?: {
+				front_default?: string;
+				front_female?: string;
+				front_shiny?: string;
+				front_shiny_female?: string;
+			};
+			showdown?: {
+				front_default?: string;
+				front_female?: string;
+				front_shiny?: string;
+				front_shiny_female?: string;
+				back_default?: string;
+				back_female?: string;
+				back_shiny?: string;
+				back_shiny_female?: string;
 			};
 		};
+		versions?: any; // Complex nested structure, using any for simplicity
 	};
 	types: Array<{
 		slot: number;
@@ -59,16 +90,45 @@ export interface Pokemon {
 		};
 		version_group_details: Array<{
 			level_learned_at: number;
-			version_group: {
+			move_learn_method: {
 				name: string;
 				url: string;
 			};
-			move_learn_method: {
+			order?: number | null;
+			version_group: {
 				name: string;
 				url: string;
 			};
 		}>;
 	}>;
+	cries?: {
+		latest?: string;
+		legacy?: string;
+	};
+	forms?: Array<{
+		name: string;
+		url: string;
+	}>;
+	game_indices?: Array<{
+		game_index: number;
+		version: {
+			name: string;
+			url: string;
+		};
+	}>;
+	held_items?: any[];
+	past_abilities?: Array<{
+		abilities: Array<{
+			ability: any;
+			is_hidden: boolean;
+			slot: number;
+		}>;
+		generation: {
+			name: string;
+			url: string;
+		};
+	}>;
+	past_types?: any[];
 }
 
 async function getAllPokemon() {

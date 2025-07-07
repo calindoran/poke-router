@@ -71,97 +71,95 @@ function LoginComponent() {
 	});
 
 	return (
-		<div className="grid gap-2 p-2 place-items-center">
-			<h3 className="text-xl">Login page</h3>
-			{search.redirect ? (
-				<p className="text-red-500">You need to login to access this page.</p>
-			) : (
-				<p>Login to see all the cool content in here.</p>
-			)}
-			<form
-				className="max-w-lg mt-4"
-				onSubmit={(e) => {
-					e.preventDefault();
-					e.stopPropagation();
-					form.handleSubmit();
-				}}
-			>
-				<fieldset disabled={isLoggingIn} className="grid w-full gap-2">
-					<div className="grid gap-2 items-center min-w-[300px]">
-						<label htmlFor="username-input" className="text-sm font-medium">
-							Username
-						</label>
-						<form.Field
-							name="username"
-							validators={{
-								onChange: ({ value }) =>
-									!value
-										? "A name is required"
-										: value.length < 3
-											? "Name must be at least 3 characters"
-											: undefined,
-								onChangeAsyncDebounceMs: 2000,
-								onChangeAsync: async ({ value }) => {
-									await new Promise((resolve) => setTimeout(resolve, 1000));
-									return (
-										value.includes("error") &&
-										'No "error" allowed in first name'
-									);
-								},
-							}}
-						>
-							{(field) => (
-								<>
-									<input
-										id={field.name}
-										name={field.name}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-										className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-										placeholder="Enter your username"
-									/>
-									<FieldInfo field={field} />
-								</>
-							)}
-						</form.Field>
-						<label htmlFor="role-select" className="text-sm font-medium">
-							Role
-						</label>
-						<form.Field
-							name="role"
-							validators={{
-								onChange: ({ value }) =>
-									!value ? "Role is required" : undefined,
-							}}
-						>
-							{(field) => (
-								<>
-									<select
-										id={field.name}
-										name={field.name}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-										className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-									>
-										<option value="">Select a role</option>
-										<option value="user">User</option>
-										<option value="admin">Admin</option>
-									</select>
-									<FieldInfo field={field} />
-								</>
-							)}
-						</form.Field>
-					</div>
-					<button
-						type="submit"
-						className="w-full px-4 py-2 text-white bg-blue-500 rounded-md disabled:bg-gray-300 disabled:text-gray-500"
+		<div className="flex items-center justify-center min-h-screen bg-gray-100 bg-gradient-to-b sm:px-6 lg:px-8">
+			<div className="w-full max-w-md overflow-hidden bg-white shadow-xl rounded-xl">
+				<div className="p-6 ">
+					<h3 className="text-xl">Login</h3>
+					<form
+						className="max-w-lg mt-4"
+						onSubmit={(e) => {
+							e.preventDefault();
+							e.stopPropagation();
+							form.handleSubmit();
+						}}
 					>
-						{isLoggingIn ? "Loading..." : "Login"}
-					</button>
-				</fieldset>
-			</form>
+						<div className="grid gap-2 items-center min-w-[300px]">
+							<label htmlFor="username-input" className="text-sm font-medium">
+								Username
+							</label>
+							<form.Field
+								name="username"
+								validators={{
+									onChange: ({ value }) =>
+										!value
+											? "A name is required"
+											: value.length < 3
+												? "Name must be at least 3 characters"
+												: undefined,
+									onChangeAsyncDebounceMs: 2000,
+									onChangeAsync: async ({ value }) => {
+										await new Promise((resolve) => setTimeout(resolve, 1000));
+										return (
+											value.includes("error") &&
+											'No "error" allowed in first name'
+										);
+									},
+								}}
+							>
+								{(field) => (
+									<>
+										<input
+											id={field.name}
+											name={field.name}
+											value={field.state.value}
+											onBlur={field.handleBlur}
+											onChange={(e) => field.handleChange(e.target.value)}
+											className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+											placeholder="Enter your username"
+										/>
+										<FieldInfo field={field} />
+									</>
+								)}
+							</form.Field>
+							<label htmlFor="role-select" className="text-sm font-medium">
+								Role
+							</label>
+							<form.Field
+								name="role"
+								validators={{
+									onChange: ({ value }) =>
+										!value ? "Role is required" : undefined,
+								}}
+							>
+								{(field) => (
+									<>
+										<select
+											id={field.name}
+											name={field.name}
+											value={field.state.value}
+											onBlur={field.handleBlur}
+											onChange={(e) => field.handleChange(e.target.value)}
+											className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+										>
+											<option value="">Select a role</option>
+											<option value="user">User</option>
+											<option value="admin">Admin</option>
+										</select>
+										<FieldInfo field={field} />
+									</>
+								)}
+							</form.Field>
+						</div>
+
+						<button
+							type="submit"
+							className="w-full px-4 py-2 mt-4 text-white bg-blue-500 rounded-md disabled:bg-gray-300 disabled:text-gray-500"
+						>
+							{isLoggingIn ? "Loading..." : "Login"}
+						</button>
+					</form>
+				</div>
+			</div>
 		</div>
 	);
 }
