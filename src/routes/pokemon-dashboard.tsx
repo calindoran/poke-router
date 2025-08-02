@@ -1,4 +1,9 @@
-import { getAllPokemonQuery, getPaginatedPokemon, getPokemonQuery, type Pokemon } from "@/pokemon";
+import {
+	getAllPokemonQuery,
+	getPaginatedPokemon,
+	getPokemonQuery,
+	type Pokemon,
+} from "@/pokemon";
 import { useForm } from "@tanstack/react-form";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -141,12 +146,13 @@ function PokemonDashboard() {
 									Error: {error.message}
 								</li>
 							) : filteredPokemon.length > 0 ? (
-								filteredPokemon.map((pokemon: { name: string; url?: string }) => {
-									if (!pokemon.name) return null;
-									return (
-										<PokemonListItem key={pokemon.name} name={pokemon.name} />
-									);
-								},
+								filteredPokemon.map(
+									(pokemon: { name: string; url?: string }) => {
+										if (!pokemon.name) return null;
+										return (
+											<PokemonListItem key={pokemon.name} name={pokemon.name} />
+										);
+									},
 								)
 							) : (
 								<li className="text-center text-gray-500 col-span-full">
@@ -193,6 +199,7 @@ function PokemonDashboard() {
 
 							<div className="flex items-center space-x-2">
 								<button
+									type="button"
 									onClick={() => setCurrentPage(1)}
 									disabled={!hasPrevious}
 									className="px-3 py-1 text-sm text-white transition-colors bg-blue-500 rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -200,7 +207,10 @@ function PokemonDashboard() {
 									First
 								</button>
 								<button
-									onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+									type="button"
+									onClick={() =>
+										setCurrentPage((prev) => Math.max(1, prev - 1))
+									}
 									disabled={!hasPrevious}
 									className="px-3 py-1 text-sm text-white transition-colors bg-blue-500 rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
 								>
@@ -225,13 +235,17 @@ function PokemonDashboard() {
 								</div>
 
 								<button
-									onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+									type="button"
+									onClick={() =>
+										setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+									}
 									disabled={!hasNext}
 									className="px-3 py-1 text-sm text-white transition-colors bg-blue-500 rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
 								>
 									Next
 								</button>
 								<button
+									type="button"
 									onClick={() => setCurrentPage(totalPages)}
 									disabled={!hasNext}
 									className="px-3 py-1 text-sm text-white transition-colors bg-blue-500 rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed"
@@ -243,7 +257,9 @@ function PokemonDashboard() {
 
 						{data && (
 							<div className="mt-2 text-xs text-center text-gray-500">
-								Showing {offset + 1} to {Math.min(offset + pageSize, data.count)} of {data.count} Pokémon
+								Showing {offset + 1} to{" "}
+								{Math.min(offset + pageSize, data.count)} of {data.count}{" "}
+								Pokémon
 							</div>
 						)}
 					</div>

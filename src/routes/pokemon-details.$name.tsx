@@ -36,15 +36,16 @@ function PokemonDetails() {
 						type="button"
 						className="mb-4"
 						onClick={() => {
-							if (window.confirm(
-								`Are you sure you want to edit this Pokémon? ${data.name} (ID: ${data.id}?)`
-							)) {
+							if (
+								window.confirm(
+									`Are you sure you want to edit this Pokémon? ${data.name} (ID: ${data.id}?)`,
+								)
+							) {
 								navigate({
 									to: "/pokemon-edit/$name",
 									params: { name: data.name },
 								});
 							}
-
 						}}
 					>
 						Edit Pokémon

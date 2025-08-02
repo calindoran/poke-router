@@ -4,10 +4,10 @@ export interface PokemonResponse {
 	count: number;
 	next: string | null;
 	previous: string | null;
-	results: Array<{
+	results: {
 		name: string;
 		url: string;
-	}>;
+	}[];
 }
 
 export interface Pokemon {
@@ -60,35 +60,35 @@ export interface Pokemon {
 		};
 		versions?: any; // Complex nested structure, using any for simplicity
 	};
-	types: Array<{
+	types: {
 		slot: number;
 		type: {
 			name: string;
 			url: string;
 		};
-	}>;
-	abilities: Array<{
+	}[];
+	abilities: {
 		is_hidden: boolean;
 		slot: number;
 		ability: {
 			name: string;
 			url: string;
 		};
-	}>;
-	stats: Array<{
+	}[];
+	stats: {
 		base_stat: number;
 		effort: number;
 		stat: {
 			name: string;
 			url: string;
 		};
-	}>;
-	moves: Array<{
+	}[];
+	moves: {
 		move: {
 			name: string;
 			url: string;
 		};
-		version_group_details: Array<{
+		version_group_details: {
 			level_learned_at: number;
 			move_learn_method: {
 				name: string;
@@ -99,40 +99,42 @@ export interface Pokemon {
 				name: string;
 				url: string;
 			};
-		}>;
-	}>;
+		}[];
+	}[];
 	cries?: {
 		latest?: string;
 		legacy?: string;
 	};
-	forms?: Array<{
+	forms?: {
 		name: string;
 		url: string;
-	}>;
-	game_indices?: Array<{
+	}[];
+	game_indices?: {
 		game_index: number;
 		version: {
 			name: string;
 			url: string;
 		};
-	}>;
+	}[];
 	held_items?: any[];
-	past_abilities?: Array<{
-		abilities: Array<{
+	past_abilities?: {
+		abilities: {
 			ability: any;
 			is_hidden: boolean;
 			slot: number;
-		}>;
+		}[];
 		generation: {
 			name: string;
 			url: string;
 		};
-	}>;
+	}[];
 	past_types?: any[];
 }
 
 async function getAllPokemon(limit: number, offset: number) {
-	const data = await fetch(`https://pokeapi.co/api/v2/pokemon/?limit=${limit}&offset=${offset}`);
+	const data = await fetch(
+		`https://pokeapi.co/api/v2/pokemon/?limit=${limit}&offset=${offset}`,
+	);
 	return (await data.json()) as PokemonResponse;
 }
 
@@ -158,7 +160,9 @@ export interface PokeDashContext {
 }
 
 // Pagination helper functions
-export const getPaginationFromUrl = (url: string | null): { limit: number; offset: number } | null => {
+export const getPaginationFromUrl = (
+	url: string | null,
+): { limit: number; offset: number } | null => {
 	if (!url) return null;
 
 	const urlObj = new URL(url);
@@ -182,9 +186,11 @@ export const getPaginatedPokemon = (limit: number, offset: number) => ({
 	queryFn: () => getAllPokemon(limit, offset),
 	// Helper methods for pagination
 	getNextPageParams: (data: PokemonResponse) => getPaginationFromUrl(data.next),
-	getPreviousPageParams: (data: PokemonResponse) => getPaginationFromUrl(data.previous),
+	getPreviousPageParams: (data: PokemonResponse) =>
+		getPaginationFromUrl(data.previous),
 	getCurrentPage: () => calculateCurrentPage(offset, limit),
-	getTotalPages: (data: PokemonResponse) => calculateTotalPages(data.count, limit),
+	getTotalPages: (data: PokemonResponse) =>
+		calculateTotalPages(data.count, limit),
 	hasNextPage: (data: PokemonResponse) => data.next !== null,
 	hasPreviousPage: (data: PokemonResponse) => data.previous !== null,
 });
